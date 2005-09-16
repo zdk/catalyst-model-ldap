@@ -1,0 +1,17 @@
+Revision history for Perl extension Catalyst::Model::LDAP.
+
+0.04  Tue Sep 13 17:13:00
+        - don't die on LDAP search errors
+        - provide access to LDAP code value and error message
+
+0.03  Mon Sep 12 13:26:35
+        - fix LDAP binds with password
+          (patch from Jason Jenkins)
+        - allow LDAP binds with e.g. SASL authentiction
+
+0.02  Tue Sep  6 18:06:43
+        - add (optional) caching of LDAP search results
+          (requested by Christopher Heschong)
+
+0.01  Tue Aug  9 17:53:00 2005
+        - initial revision

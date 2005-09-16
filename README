@@ -1,0 +1,85 @@
+NAME
+    Catalyst::Model::LDAP - LDAP model class for Catalyst
+
+SYNOPSIS
+      # Use the Catalyst helper
+      script/myapp_create.pl model People LDAP ldap.ufl.edu ou=People,dc=ufl,dc=edu
+
+      # lib/MyApp/Model/People.pm
+      package MyApp::Model::People;
+
+      use base 'Catalyst::Model::LDAP';
+
+      __PACKAGE__->config(
+          host         => 'ldap.ufl.edu',
+          base         => 'ou=People,dc=ufl,dc=edu',
+          dn           => '',
+          password     => '',
+          options      => {},     # Net::LDAP method options (e.g. SASL
+                                  # for bind or sizelimit for search)
+          cache        => undef,  # Reference to a Cache object (e.g.
+                                  # Cache::FastMmap) to cache results
+      );
+
+      1;
+
+      # As object method
+      $c->comp('MyApp::Model::People')->search('(sn=TEST)');
+
+      # As class method
+      MyApp::Model::People->search('(sn=TEST)');
+
+DESCRIPTION
+    This is the Net::LDAP model class for Catalyst. It is nothing more than
+    a simple wrapper for Net::LDAP.
+
+METHODS
+  new
+    Create a new Catalyst LDAP model component.
+
+  search
+    Search the directory using a given filter. Returns an arrayref
+    containing the matching entries (if any).
+
+    This method sets the "code" and "error" properties. This allows you to
+    check for nonfatal error conditions, such as hitting the search time
+    limit.
+
+    If a Cache object is specified in the configuration, it is used to store
+    responses from the LDAP server. On subsequent searches using the same
+    filter, the cached response is used. (Note: The "code" and "error"
+    values are not cached.)
+
+  _client
+    Return a reference to an LDAP client bound using the current
+    configuration. If the bind fails, the method sets the "code" and "error"
+    property and dies with the error message.
+
+  _cache
+    Get and set cache values, if a Cache object is configured. If only a key
+    is specified, return the cached value, if one exists. If a value is also
+    given, set the value in the cache.
+
+SEE ALSO
+    Catalyst, Net::LDAP, Cache
+
+TODO
+    *   Add other LDAP methods.
+
+    *   Cache the LDAP code value and error message?
+
+    *   Maybe move caching code to a separate class, e.g.
+        "Catalyst::Model::LDAP::Cached".
+
+AUTHOR
+    Daniel Westermann-Clark <danieltwc@cpan.org>
+
+    Based on work started by <salih@ip-plus.net> on the Catalyst mailing
+    list:
+
+    <http://lists.rawmode.org/pipermail/catalyst/2005-June/000712.html>
+
+LICENSE
+    This library is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+
