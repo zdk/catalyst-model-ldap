@@ -24,7 +24,7 @@ SYNOPSIS
       1;
 
       # As object method
-      $c->comp('MyApp::Model::People')->search('(sn=TEST)');
+      $c->comp('M::People')->search('(sn=TEST)');
 
       # As class method
       MyApp::Model::People->search('(sn=TEST)');

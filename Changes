@@ -1,5 +1,8 @@
 Revision history for Perl extension Catalyst::Model::LDAP.
 
+0.05  Fri Oct  7 23:51:50
+        - remove accidental inheritance from Net::LDAP
+
 0.04  Tue Sep 13 17:13:00
         - don't die on LDAP search errors
         - provide access to LDAP code value and error message

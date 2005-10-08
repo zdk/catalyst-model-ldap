@@ -30,8 +30,7 @@ sub mk_compclass {
     $helper->{dn}       = $dn       || '';
     $helper->{password} = $password || '';
 
-    my $file = $helper->{file};
-    $helper->render_file('ldapclass', $file);
+    $helper->render_file('modelclass', $helper->{file});
 
     return 1;
 }
@@ -45,9 +44,7 @@ Makes tests for the LDAP model.
 sub mk_comptest {
     my ($self, $helper) = @_;
 
-    my $test = $helper->{test};
-
-    $helper->render_file('ldaptest', $test);
+    $helper->render_file('modeltest', $helper->{test});
 }
 
 =head1 SEE ALSO
@@ -70,7 +67,7 @@ it under the same terms as Perl itself.
 
 __DATA__
 
-__ldapclass__
+__modelclass__
 package [% class %];
 
 use strict;
@@ -109,7 +106,7 @@ it under the same terms as Perl itself.
 =cut
 
 1;
-__ldaptest__
+__modeltest__
 use Test::More tests => 2;
 use_ok(Catalyst::Test, '[% app %]');
 use_ok('[% class %]');

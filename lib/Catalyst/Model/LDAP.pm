@@ -1,11 +1,11 @@
 package Catalyst::Model::LDAP;
 
 use strict;
+use base qw/Catalyst::Base/;
 use Net::LDAP;
-use base qw/Catalyst::Base Net::LDAP/;
 use NEXT;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 __PACKAGE__->mk_accessors('code', 'error');
 
@@ -37,7 +37,7 @@ Catalyst::Model::LDAP - LDAP model class for Catalyst
   1;
 
   # As object method
-  $c->comp('MyApp::Model::People')->search('(sn=TEST)');
+  $c->comp('M::People')->search('(sn=TEST)');
 
   # As class method
   MyApp::Model::People->search('(sn=TEST)');
