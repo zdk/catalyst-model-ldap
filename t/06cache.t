@@ -1,5 +1,7 @@
+package main;
+
 use strict;
-use Catalyst::Model::LDAP;
+use warnings;
 use Test::More;
 
 eval 'use Cache::FastMmap';
@@ -7,15 +9,35 @@ if ($@) {
     plan skip_all => 'Cache::FastMmap required';
 }
 else {
-    plan tests => 2;
+    plan tests => 3;
 }
 
-my $ldap = Catalyst::Model::LDAP->new;
-$ldap->config(
-    host  => 'ldap.ufl.edu',
-    base  => 'ou=People,dc=ufl,dc=edu',
-    cache => Cache::FastMmap->new,
-);
+
+{
+    package TestApp::M::LDAP::Cached;
+
+    use strict;
+    use warnings;
+    use base qw/Catalyst::Model::LDAP::Cached/;
+    use Cache::FastMmap;
+
+    use FindBin;
+    use lib "$FindBin::Bin/lib";
+    use TestApp::M::LDAP;
+
+    my $ldap = TestApp::M::LDAP->new;
+
+    __PACKAGE__->config(
+        host  => $ldap->config->{host},
+        base  => $ldap->config->{base},
+        cache => Cache::FastMmap->new,
+    );
+
+    1;
+}
+
+
+ok(my $ldap = TestApp::M::LDAP::Cached->new);
 
 my $entries = $ldap->search('(sn=TEST)');
 ok(scalar @{ $entries } > 0);

@@ -2,10 +2,10 @@ package Catalyst::Model::LDAP;
 
 use strict;
 use base qw/Catalyst::Base/;
-use Net::LDAP;
 use NEXT;
+use Net::LDAP;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 __PACKAGE__->mk_accessors('code', 'error');
 
@@ -28,10 +28,9 @@ Catalyst::Model::LDAP - LDAP model class for Catalyst
       base         => 'ou=People,dc=ufl,dc=edu',
       dn           => '',
       password     => '',
-      options      => {},     # Net::LDAP method options (e.g. SASL
-                              # for bind or sizelimit for search)
-      cache        => undef,  # Reference to a Cache object (e.g.
-                              # Cache::FastMmap) to cache results
+      options      => {},  # Options passed to all Net::LDAP methods
+                           # (e.g. SASL for bind or sizelimit for
+                           # search)
   );
 
   1;
@@ -56,9 +55,12 @@ Create a new Catalyst LDAP model component.
 =cut
 
 sub new {
-    my $self = shift;
+    my ($self, $c, $config) = @_;
 
-    return $self->NEXT::new(@_);
+    $self = $self->NEXT::new($c, $config);
+    $self->config($config);
+
+    return $self;
 }
 
 =head2 search
@@ -66,125 +68,89 @@ sub new {
 Search the directory using a given filter. Returns an arrayref
 containing the matching entries (if any).
 
-This method sets the C<code> and C<error> properties. This allows you
-to check for nonfatal error conditions, such as hitting the search
-time limit.
-
-If a L<Cache> object is specified in the configuration, it is used to
-store responses from the LDAP server. On subsequent searches using the
-same filter, the cached response is used. (Note: The C<code> and
-C<error> values are not cached.)
-
 =cut
 
 sub search {
     my ($self, $filter) = @_;
 
-    my $entries = $self->_cache($filter);
+    my @args = (
+        base   => $self->config->{base},
+        filter => $filter,
+    );
+    my $mesg = $self->_execute('search', @args);
 
-    unless (defined $entries) {
-        my $client = $self->_client;
-        my $mesg = $client->search(
-            base   => $self->config->{base},
-            filter => $filter,
-            %{ $self->config->{options} },
-        );
-        $self->code($mesg->code);
-        $self->error($mesg->error);
+    my @entries = $mesg->entries;
 
-        $entries = [ $mesg->entries ];
-        $client->unbind;
+    return \@entries;
+}
 
-        $self->_cache($filter, $entries);
-    }
+=head2 _execute
 
-    return $entries;
+Bind to the server and execute the specified L<Net::LDAP> method,
+passing in the specified arguments.
+
+=cut
+
+sub _execute {
+    my ($self, $op, @args) = @_;
+
+    my $ldap = $self->_client;
+
+    my $mesg = $ldap->$op(@args, %{ $self->config->{options} });
+    $self->code($mesg->code);
+    $self->error($mesg->error);
+
+    $ldap->unbind;
+
+    return $mesg;
 }
 
 =head2 _client
 
-Return a reference to an LDAP client bound using the current
-configuration. If the bind fails, the method sets the C<code> and
-C<error> property and dies with the error message.
+Return an LDAP connection, bound to the server using the current
+configuration.
 
 =cut
 
 sub _client {
     my ($self) = @_;
 
-    my $client = Net::LDAP->new(
+    my $ldap = Net::LDAP->new(
         $self->config->{host},
-        %{ $self->config->{options} }
+        %{ $self->config->{options} },
     ) or die $@;
 
-    my $mesg;
-    if ($self->config->{dn} and $self->config->{password}) {
-        $mesg = $client->bind(
-            $self->config->{dn},
-            password => $self->config->{password},
-            %{ $self->config->{options} },
-        );
-    }
-    elsif ($self->config->{dn} and %{ $self->config->{options} }) {
-        $mesg = $client->bind(
-            $self->config->{dn},
-            %{ $self->config->{options} },
-        );
-    }
-    else {
-        $mesg = $client->bind;
+    # Default to an anonymous bind
+    my @args;
+    if (exists $self->config->{dn}) {
+        push @args, $self->config->{dn};
+        push @args, password => $self->config->{password} if exists $self->config->{password};
+        push @args, %{ $self->config->{options} }         if exists $self->config->{options};
     }
 
-    $self->code($mesg->code);
-    $self->error($mesg->error);
+    my $mesg = $ldap->bind(@args);
     die 'LDAP error: ' . $mesg->error if $mesg->is_error;
 
-    return $client;
-}
-
-=head2 _cache
-
-Get and set cache values, if a L<Cache> object is configured. If only
-a key is specified, return the cached value, if one exists. If a value
-is also given, set the value in the cache.
-
-=cut
-
-sub _cache {
-    my ($self, $key, $value) = @_;
-
-    my $cache = $self->config->{cache};
-    return unless $cache;
-
-    if (defined $value) {
-        $cache->set($key, $value);
-    }
-
-    my $cached = $cache->get($key);
-
-    return $cached;
+    return $ldap;
 }
 
 =head1 SEE ALSO
 
-L<Catalyst>, L<Net::LDAP>, L<Cache>
+=over 4
+
+=item * L<Catalyst>
+
+=item * L<Net::LDAP>
+
+=item * L<Catalyst::Model::LDAP::Cached>
+
+=back
 
 =head1 TODO
 
 =over 4
 
-=item *
-
-Add other LDAP methods.
-
-=item *
-
-Cache the LDAP code value and error message?
-
-=item *
-
-Maybe move caching code to a separate class, e.g.
-C<Catalyst::Model::LDAP::Cached>.
+=item * Add other LDAP methods.
 
 =back
 

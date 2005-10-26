@@ -1,18 +1,24 @@
 use strict;
-use Catalyst::Model::LDAP;
+use warnings;
+use Test::More tests => 5;
 use Net::LDAP::Constant qw(LDAP_SIZELIMIT_EXCEEDED);
-use Test::More tests => 3;
 
-my $ldap = Catalyst::Model::LDAP->new;
-$ldap->config(
-    host    => 'ldap.ufl.edu',
-    base    => 'ou=People,dc=ufl,dc=edu',
+use FindBin;
+use lib "$FindBin::Bin/lib";
+use TestApp::M::LDAP;
+
+my $SIZELIMIT = 2;
+
+TestApp::M::LDAP->config(
     options => {
-        sizelimit => 2,
+        sizelimit => $SIZELIMIT,
     },
 );
+ok(my $ldap = TestApp::M::LDAP->new);
+ok($ldap->config->{options}->{sizelimit} == $SIZELIMIT);
 
 my $entries = $ldap->search("(sn=SMITH)");
 ok(scalar @{ $entries } == $ldap->config->{options}->{sizelimit});
+
 ok($ldap->code == LDAP_SIZELIMIT_EXCEEDED);
 ok($ldap->error =~ /sizelimit/i);

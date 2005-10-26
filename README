@@ -15,10 +15,9 @@ SYNOPSIS
           base         => 'ou=People,dc=ufl,dc=edu',
           dn           => '',
           password     => '',
-          options      => {},     # Net::LDAP method options (e.g. SASL
-                                  # for bind or sizelimit for search)
-          cache        => undef,  # Reference to a Cache object (e.g.
-                                  # Cache::FastMmap) to cache results
+          options      => {},  # Options passed to all Net::LDAP methods
+                               # (e.g. SASL for bind or sizelimit for
+                               # search)
       );
 
       1;
@@ -41,35 +40,21 @@ METHODS
     Search the directory using a given filter. Returns an arrayref
     containing the matching entries (if any).
 
-    This method sets the "code" and "error" properties. This allows you to
-    check for nonfatal error conditions, such as hitting the search time
-    limit.
-
-    If a Cache object is specified in the configuration, it is used to store
-    responses from the LDAP server. On subsequent searches using the same
-    filter, the cached response is used. (Note: The "code" and "error"
-    values are not cached.)
+  _execute
+    Bind to the server and execute the specified Net::LDAP method, passing
+    in the specified arguments.
 
   _client
-    Return a reference to an LDAP client bound using the current
-    configuration. If the bind fails, the method sets the "code" and "error"
-    property and dies with the error message.
-
-  _cache
-    Get and set cache values, if a Cache object is configured. If only a key
-    is specified, return the cached value, if one exists. If a value is also
-    given, set the value in the cache.
+    Return an LDAP connection, bound to the server using the current
+    configuration.
 
 SEE ALSO
-    Catalyst, Net::LDAP, Cache
+    * Catalyst
+    * Net::LDAP
+    * Catalyst::Model::LDAP::Cached
 
 TODO
-    *   Add other LDAP methods.
-
-    *   Cache the LDAP code value and error message?
-
-    *   Maybe move caching code to a separate class, e.g.
-        "Catalyst::Model::LDAP::Cached".
+    * Add other LDAP methods.
 
 AUTHOR
     Daniel Westermann-Clark <danieltwc@cpan.org>

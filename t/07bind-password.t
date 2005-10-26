@@ -1,17 +1,22 @@
 use strict;
-use Catalyst::Model::LDAP;
+use warnings;
 use Test::More;
 
-plan skip_all => 'set LDAP_BINDDN and LDAP_PASSWORD to enable this test' unless $ENV{LDAP_BINDDN} and $ENV{LDAP_PASSWORD};
-plan tests => 2;
+use FindBin;
+use lib "$FindBin::Bin/lib";
+use TestApp::M::LDAP;
 
-my $ldap = Catalyst::Model::LDAP->new;
-$ldap->config(
-    host     => 'ldap.ufl.edu',
-    base     => 'ou=People,dc=ufl,dc=edu',
+plan skip_all => 'set LDAP_BINDDN and LDAP_PASSWORD to enable this test' unless $ENV{LDAP_BINDDN} and $ENV{LDAP_PASSWORD};
+plan tests => 5;
+
+TestApp::M::LDAP->config(
     dn       => $ENV{LDAP_BINDDN},
     password => $ENV{LDAP_PASSWORD},
 );
+
+ok(my $ldap = TestApp::M::LDAP->new);
+ok($ldap->config->{dn} eq $ENV{LDAP_BINDDN});
+ok($ldap->config->{password} eq $ENV{LDAP_PASSWORD});
 
 my $uid = 'dwc';
 my $entries = $ldap->search("(uid=$uid)");

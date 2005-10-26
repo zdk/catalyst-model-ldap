@@ -1,12 +1,12 @@
 use strict;
-use Catalyst::Model::LDAP;
+use warnings;
 use Test::More tests => 2;
 
-ok(my $ldap = Catalyst::Model::LDAP->new);
-$ldap->config(
-    host => 'ldap.ufl.edu',
-    base => 'ou=People,dc=ufl,dc=edu',
-);
+use FindBin;
+use lib "$FindBin::Bin/lib";
+use TestApp::M::LDAP;
+
+ok(my $ldap = TestApp::M::LDAP->new);
 
 my $entries = $ldap->search('(sn=TEST)');
 ok(scalar @{ $entries } > 0);

@@ -1,6 +1,7 @@
 Changes
 lib/Catalyst/Helper/Model/LDAP.pm
 lib/Catalyst/Model/LDAP.pm
+lib/Catalyst/Model/LDAP/Cached.pm
 Makefile.PL
 MANIFEST			This list of files
 META.yml
@@ -13,3 +14,4 @@ t/05limit.t
 t/06cache.t
 t/07bind-password.t
 t/08bind-options.t
+t/lib/TestApp/M/LDAP.pm
