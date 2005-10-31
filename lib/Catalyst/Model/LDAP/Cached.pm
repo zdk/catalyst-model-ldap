@@ -27,11 +27,9 @@ Catalyst::Model::LDAP::Cached - Cached LDAP model class for Catalyst
 
   1;
 
-  # As object method
-  $c->comp('M::People')->search('(sn=TEST)');
-
-  # As class method
-  MyApp::Model::People->search('(sn=TEST)');
+  # In your controller
+  my $entries = $c->comp('M::People')->search('(sn=TEST)');
+  print $entries->[0]->get_value('sn');
 
 =head1 DESCRIPTION
 
@@ -44,7 +42,10 @@ than a simple wrapper for L<Net::LDAP>.
 
 Search the directory using a given filter, but check the configured
 cache first for a matching filter. Returns an arrayref containing the
-matching entries (if any).
+matching L<Net::LDAP::Entry> objects (if any).
+
+  my $entries = $c->comp('M::People')->search('(sn=TEST)');
+  print $entries->[0]->get_value('sn');
 
 =cut
 

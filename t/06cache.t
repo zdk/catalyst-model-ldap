@@ -25,11 +25,8 @@ else {
     use lib "$FindBin::Bin/lib";
     use TestApp::M::LDAP;
 
-    my $ldap = TestApp::M::LDAP->new;
-
     __PACKAGE__->config(
-        host  => $ldap->config->{host},
-        base  => $ldap->config->{base},
+        %{ TestApp::M::LDAP->config },
         cache => Cache::FastMmap->new,
     );
 

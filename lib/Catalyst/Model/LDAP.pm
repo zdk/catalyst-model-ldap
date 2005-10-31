@@ -2,10 +2,11 @@ package Catalyst::Model::LDAP;
 
 use strict;
 use base qw/Catalyst::Base/;
+use Carp ();
 use NEXT;
 use Net::LDAP;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 __PACKAGE__->mk_accessors('code', 'error');
 
@@ -35,11 +36,9 @@ Catalyst::Model::LDAP - LDAP model class for Catalyst
 
   1;
 
-  # As object method
-  $c->comp('M::People')->search('(sn=TEST)');
-
-  # As class method
-  MyApp::Model::People->search('(sn=TEST)');
+  # In your controller
+  my $entries = $c->comp('M::People')->search('(sn=TEST)');
+  print $entries->[0]->get_value('sn');
 
 =head1 DESCRIPTION
 
@@ -66,7 +65,10 @@ sub new {
 =head2 search
 
 Search the directory using a given filter. Returns an arrayref
-containing the matching entries (if any).
+containing the matching L<Net::LDAP::Entry> objects (if any).
+
+  my $entries = $c->comp('M::People')->search('(sn=TEST)');
+  print $entries->[0]->get_value('sn');
 
 =cut
 
@@ -118,7 +120,7 @@ sub _client {
     my $ldap = Net::LDAP->new(
         $self->config->{host},
         %{ $self->config->{options} },
-    ) or die $@;
+    ) or Carp::croak $@;
 
     # Default to an anonymous bind
     my @args;
@@ -129,7 +131,7 @@ sub _client {
     }
 
     my $mesg = $ldap->bind(@args);
-    die 'LDAP error: ' . $mesg->error if $mesg->is_error;
+    Carp::croak 'LDAP error: ' . $mesg->error if $mesg->is_error;
 
     return $ldap;
 }
@@ -150,7 +152,7 @@ sub _client {
 
 =over 4
 
-=item * Add other LDAP methods.
+=item * Add other LDAP methods
 
 =back
 

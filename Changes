@@ -1,5 +1,9 @@
 Revision history for Perl extension Catalyst::Model::LDAP.
 
+0.07  Sun Oct 30 20:19:12 2005
+        - update documentation with examples
+        - use Carp::croak instead of die on connection errors
+
 0.06  Wed Oct 26 00:57:46 2005
         - refactor Catalyst::Model::LDAP
         - call config explicitly in constructor

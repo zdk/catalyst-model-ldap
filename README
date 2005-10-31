@@ -22,11 +22,9 @@ SYNOPSIS
 
       1;
 
-      # As object method
-      $c->comp('M::People')->search('(sn=TEST)');
-
-      # As class method
-      MyApp::Model::People->search('(sn=TEST)');
+      # In your controller
+      my $entries = $c->comp('M::People')->search('(sn=TEST)');
+      print $entries->[0]->get_value('sn');
 
 DESCRIPTION
     This is the Net::LDAP model class for Catalyst. It is nothing more than
@@ -38,7 +36,10 @@ METHODS
 
   search
     Search the directory using a given filter. Returns an arrayref
-    containing the matching entries (if any).
+    containing the matching Net::LDAP::Entry objects (if any).
+
+      my $entries = $c->comp('M::People')->search('(sn=TEST)');
+      print $entries->[0]->get_value('sn');
 
   _execute
     Bind to the server and execute the specified Net::LDAP method, passing
@@ -54,7 +55,7 @@ SEE ALSO
     * Catalyst::Model::LDAP::Cached
 
 TODO
-    * Add other LDAP methods.
+    * Add other LDAP methods
 
 AUTHOR
     Daniel Westermann-Clark <danieltwc@cpan.org>
