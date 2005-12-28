@@ -3,10 +3,10 @@ NAME
 
 SYNOPSIS
       # Use the Catalyst helper
-      script/myapp_create.pl model People LDAP ldap.ufl.edu ou=People,dc=ufl,dc=edu
+      script/myapp_create.pl model Person LDAP ldap.ufl.edu ou=People,dc=ufl,dc=edu
 
-      # lib/MyApp/Model/People.pm
-      package MyApp::Model::People;
+      # lib/MyApp/Model/Person.pm
+      package MyApp::Model::Person;
 
       use base 'Catalyst::Model::LDAP';
 
@@ -23,39 +23,30 @@ SYNOPSIS
       1;
 
       # In your controller
-      my $entries = $c->comp('M::People')->search('(sn=TEST)');
-      print $entries->[0]->get_value('sn');
+      my $mesg = $c->model('Person')->search('(sn=TEST)');
+      my @entries = $mesg->entries;
+      print $entries[0]->get_value('sn');
 
 DESCRIPTION
     This is the Net::LDAP model class for Catalyst. It is nothing more than
     a simple wrapper for Net::LDAP.
 
+    This class simplifies LDAP searches by letting you configure a base DN.
+    Other Net::LDAP methods are supported via Perl's AUTOLOAD mechanism.
+
 METHODS
   new
     Create a new Catalyst LDAP model component.
 
-  search
-    Search the directory using a given filter. Returns an arrayref
-    containing the matching Net::LDAP::Entry objects (if any).
-
-      my $entries = $c->comp('M::People')->search('(sn=TEST)');
-      print $entries->[0]->get_value('sn');
+  _client
+    Bind the client using the current configuration and return it.
 
   _execute
-    Bind to the server and execute the specified Net::LDAP method, passing
-    in the specified arguments.
-
-  _client
-    Return an LDAP connection, bound to the server using the current
-    configuration.
+    Execute the specified LDAP command.
 
 SEE ALSO
     * Catalyst
     * Net::LDAP
-    * Catalyst::Model::LDAP::Cached
-
-TODO
-    * Add other LDAP methods
 
 AUTHOR
     Daniel Westermann-Clark <danieltwc@cpan.org>
@@ -64,6 +55,9 @@ AUTHOR
     list:
 
     <http://lists.rawmode.org/pipermail/catalyst/2005-June/000712.html>
+
+ACKNOWLEDGEMENTS
+    * Christopher H. Laco, for "AUTOLOAD" idea
 
 LICENSE
     This library is free software; you can redistribute it and/or modify it

@@ -1,24 +1,23 @@
 use strict;
 use warnings;
-use Test::More tests => 5;
+use Test::More tests => 4;
 use Net::LDAP::Constant qw(LDAP_SIZELIMIT_EXCEEDED);
 
 use FindBin;
 use lib "$FindBin::Bin/lib";
-use TestApp::M::LDAP;
+use TestApp::Model::LDAP;
 
 my $SIZELIMIT = 2;
 
-TestApp::M::LDAP->config(
+TestApp::Model::LDAP->config(
     options => {
         sizelimit => $SIZELIMIT,
     },
 );
-ok(my $ldap = TestApp::M::LDAP->new);
-ok($ldap->config->{options}->{sizelimit} == $SIZELIMIT);
+ok(my $ldap = TestApp::Model::LDAP->new, 'created model class');
+is($ldap->config->{options}->{sizelimit}, $SIZELIMIT, 'sizelimit configured');
 
-my $entries = $ldap->search("(sn=SMITH)");
-ok(scalar @{ $entries } == $ldap->config->{options}->{sizelimit});
+my $mesg = $ldap->search("(sn=SMITH)");
 
-ok($ldap->code == LDAP_SIZELIMIT_EXCEEDED);
-ok($ldap->error =~ /sizelimit/i);
+is($mesg->code, LDAP_SIZELIMIT_EXCEEDED, 'server response okay');
+is(scalar $mesg->entries, $ldap->config->{options}->{sizelimit}, 'number of entries matches sizelimit');

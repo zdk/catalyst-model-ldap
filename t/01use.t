@@ -1,6 +1,7 @@
 use strict;
-use Test::More tests => 3;
+use Test::More tests => 2;
 
-BEGIN { use_ok('Catalyst::Model::LDAP') }
-BEGIN { use_ok('Catalyst::Model::LDAP::Cached') }
-BEGIN { use_ok('Catalyst::Helper::Model::LDAP') }
+BEGIN {
+    use_ok('Catalyst::Model::LDAP');
+    use_ok('Catalyst::Helper::Model::LDAP');
+}

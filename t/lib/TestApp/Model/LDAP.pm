@@ -1,4 +1,4 @@
-package TestApp::M::LDAP;
+package TestApp::Model::LDAP;
 
 use strict;
 use warnings;
