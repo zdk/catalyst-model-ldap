@@ -1,5 +1,8 @@
 Revision history for Perl extension Catalyst::Model::LDAP.
 
+0.09  Wed Feb  1 18:51:02 EST 2006
+        - Documentation cleanup
+
 0.08  Wed Dec 28 02:59:35 EST 2005
         - Require Catalyst 5.5 (for Catalyst::Model)
         - Remove Catalyst::Model::LDAP::Cached; caching should be done
@@ -8,30 +11,30 @@ Revision history for Perl extension Catalyst::Model::LDAP.
         - Support other Net::LDAP methods via AUTOLOAD
           (idea stolen from Catalyst::Model::NetBlogger)
 
-0.07  Sun Oct 30 20:19:12 2005
+0.07  Sun Oct 30 20:19:12 EST 2005
         - Update documentation with examples
         - Use Carp::croak instead of die on connection errors
 
-0.06  Wed Oct 26 00:57:46 2005
+0.06  Wed Oct 26 00:57:46 EDT 2005
         - Refactor Catalyst::Model::LDAP
         - Call config explicitly in constructor
         - Move caching code to Catalyst::Model::LDAP::Cached
 
-0.05  Fri Oct  7 23:51:50 2005
+0.05  Fri Oct  7 23:51:50 EDT 2005
         - Remove accidental inheritance from Net::LDAP
 
-0.04  Tue Sep 13 17:13:00 2005
+0.04  Tue Sep 13 17:13:00 EDT 2005
         - Don't die on LDAP search errors
         - Provide access to LDAP code value and error message
 
-0.03  Mon Sep 12 13:26:35 2005
+0.03  Mon Sep 12 13:26:35 EDT 2005
         - Fix LDAP binds with password
           (patch from Jason Jenkins)
         - Allow LDAP binds with e.g. SASL authentiction
 
-0.02  Tue Sep  6 18:06:43 2005
+0.02  Tue Sep  6 18:06:43 EDT 2005
         - Add (optional) caching of LDAP search results
           (requested by Christopher Heschong)
 
-0.01  Tue Aug  9 17:53:00 2005
+0.01  Tue Aug  9 17:53:00 EDT 2005
         - Initial revision

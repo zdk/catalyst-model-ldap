@@ -1,12 +1,17 @@
 # http://module-build.sourceforge.net/META-spec.html
 #XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
 name:         Catalyst-Model-LDAP
-version:      0.08
+version:      0.09
 version_from: lib/Catalyst/Model/LDAP.pm
 installdirs:  site
 requires:
+    Carp:                          0
     Catalyst:                      5.5
+    FindBin:                       0
     Net::LDAP:                     0
+    Net::LDAP::Constant:           0
+    NEXT:                          0
+    Test::More:                    0
 
 distribution_type: module
 generated_by: ExtUtils::MakeMaker version 6.17

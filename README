@@ -2,47 +2,57 @@ NAME
     Catalyst::Model::LDAP - LDAP model class for Catalyst
 
 SYNOPSIS
-      # Use the Catalyst helper
-      script/myapp_create.pl model Person LDAP ldap.ufl.edu ou=People,dc=ufl,dc=edu
+        # Use the Catalyst helper
+        script/myapp_create.pl model Person LDAP ldap.ufl.edu ou=People,dc=ufl,dc=edu
 
-      # lib/MyApp/Model/Person.pm
-      package MyApp::Model::Person;
+        # lib/MyApp/Model/Person.pm
+        package MyApp::Model::Person;
 
-      use base 'Catalyst::Model::LDAP';
+        use base 'Catalyst::Model::LDAP';
 
-      __PACKAGE__->config(
-          host         => 'ldap.ufl.edu',
-          base         => 'ou=People,dc=ufl,dc=edu',
-          dn           => '',
-          password     => '',
-          options      => {},  # Options passed to all Net::LDAP methods
-                               # (e.g. SASL for bind or sizelimit for
-                               # search)
-      );
+        __PACKAGE__->config(
+            host         => 'ldap.ufl.edu',
+            base         => 'ou=People,dc=ufl,dc=edu',
+            dn           => '',
+            password     => '',
+            options      => {},  # Options passed to all Net::LDAP methods
+                                 # (e.g. SASL for bind or sizelimit for
+                                 # search)
+        );
 
-      1;
+        1;
 
-      # In your controller
-      my $mesg = $c->model('Person')->search('(sn=TEST)');
-      my @entries = $mesg->entries;
-      print $entries[0]->get_value('sn');
+        # In your controller
+        my $mesg = $c->model('Person')->search('(cn=Lou Rhodes)');
+        my @entries = $mesg->entries;
+        print $entries[0]->get_value('sn');
 
 DESCRIPTION
     This is the Net::LDAP model class for Catalyst. It is nothing more than
     a simple wrapper for Net::LDAP.
 
-    This class simplifies LDAP searches by letting you configure a base DN.
-    Other Net::LDAP methods are supported via Perl's AUTOLOAD mechanism.
+    This class simplifies LDAP access by letting you configure a common set
+    of bind arguments and options. It also lets you configure a base DN for
+    searching.
+
+    Net::LDAP methods are supported via Perl's "AUTOLOAD" mechanism. Please
+    refer to the Net::LDAP documentation for information on what's
+    available.
 
 METHODS
   new
     Create a new Catalyst LDAP model component.
 
   _client
-    Bind the client using the current configuration and return it.
+    Bind the client using the current configuration and return it. This
+    method is automatically called when you use a Net::LDAP method.
 
   _execute
-    Execute the specified LDAP command.
+    Execute the specified LDAP command. Call the appropriate Net::LDAP
+    methods directly instead of this method. For example:
+
+        # In your controller
+        my $mesg = $c->model('Person')->search('(cn=Andy Barlow)');
 
 SEE ALSO
     * Catalyst
@@ -51,12 +61,8 @@ SEE ALSO
 AUTHOR
     Daniel Westermann-Clark <danieltwc@cpan.org>
 
-    Based on work started by <salih@ip-plus.net> on the Catalyst mailing
-    list:
-
-    <http://lists.rawmode.org/pipermail/catalyst/2005-June/000712.html>
-
 ACKNOWLEDGEMENTS
+    * Salih Gonullu, for initial work on Catalyst mailing list
     * Christopher H. Laco, for "AUTOLOAD" idea
 
 LICENSE
