@@ -11,13 +11,15 @@ SYNOPSIS
         use base 'Catalyst::Model::LDAP';
 
         __PACKAGE__->config(
-            host         => 'ldap.ufl.edu',
-            base         => 'ou=People,dc=ufl,dc=edu',
-            dn           => '',
-            password     => '',
-            options      => {},  # Options passed to all Net::LDAP methods
-                                 # (e.g. SASL for bind or sizelimit for
-                                 # search)
+            host              => 'ldap.ufl.edu',
+            base              => 'ou=People,dc=ufl,dc=edu',
+            dn                => '',
+            password          => '',
+            start_tls         => 1,
+            start_tls_options => { verify => 'require' },
+            options           => {},  # Options passed to all Net::LDAP methods
+                                      # (e.g. SASL for bind or sizelimit for
+                                      # search)
         );
 
         1;
@@ -47,6 +49,9 @@ METHODS
     Bind the client using the current configuration and return it. This
     method is automatically called when you use a Net::LDAP method.
 
+    If the "start_tls" configuration option is present, the client will use
+    the Net::LDAP "start_tls" method to make your connection secure.
+
   _execute
     Execute the specified LDAP command. Call the appropriate Net::LDAP
     methods directly instead of this method. For example:
@@ -58,8 +63,9 @@ SEE ALSO
     * Catalyst
     * Net::LDAP
 
-AUTHOR
-    Daniel Westermann-Clark <danieltwc@cpan.org>
+AUTHORS
+    * Daniel Westermann-Clark <danieltwc@cpan.org>
+    * Adam Jacob <holoway@cpan.org> (TLS support)
 
 ACKNOWLEDGEMENTS
     * Salih Gonullu, for initial work on Catalyst mailing list

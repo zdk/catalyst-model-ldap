@@ -2,11 +2,11 @@ package Catalyst::Model::LDAP;
 
 use strict;
 use base qw/Catalyst::Model/;
-use Carp ();
+use Carp;
 use NEXT;
 use Net::LDAP;
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 our $AUTOLOAD;
 
 =head1 NAME
@@ -24,13 +24,15 @@ Catalyst::Model::LDAP - LDAP model class for Catalyst
     use base 'Catalyst::Model::LDAP';
 
     __PACKAGE__->config(
-        host         => 'ldap.ufl.edu',
-        base         => 'ou=People,dc=ufl,dc=edu',
-        dn           => '',
-        password     => '',
-        options      => {},  # Options passed to all Net::LDAP methods
-                             # (e.g. SASL for bind or sizelimit for
-                             # search)
+        host              => 'ldap.ufl.edu',
+        base              => 'ou=People,dc=ufl,dc=edu',
+        dn                => '',
+        password          => '',
+        start_tls         => 1,
+        start_tls_options => { verify => 'require' },
+        options           => {},  # Options passed to all Net::LDAP methods
+                                  # (e.g. SASL for bind or sizelimit for
+                                  # search)
     );
 
     1;
@@ -75,6 +77,10 @@ sub new {
 Bind the client using the current configuration and return it.  This
 method is automatically called when you use a L<Net::LDAP> method.
 
+If the C<start_tls> configuration option is present, the client will
+use the L<Net::LDAP> C<start_tls> method to make your connection
+secure.
+
 =cut
 
 sub _client {
@@ -93,10 +99,21 @@ sub _client {
     my $client = Net::LDAP->new(
         $self->config->{host},
         %{ exists $self->config->{options} ? $self->config->{options} : {} },
-    ) or Carp::croak($@);
+    ) or croak $@;
+
+    if (exists $self->config->{start_tls}) {
+        my $mesg;
+        if (exists $self->config->{start_tls_options} && ref $self->config->{start_tls_options} eq 'HASH') {
+            $mesg = $client->start_tls(%{ $self->config->{start_tls_options} });
+        }
+        else {
+            $mesg = $client->start_tls;
+        }
+        croak 'LDAP TLS error: ' . $mesg->error if $mesg->is_error;
+    }
 
     my $mesg = $client->bind(@args);
-    Carp::croak('LDAP error: ' . $mesg->error) if $mesg->is_error;
+    croak 'LDAP error: ' . $mesg->error if $mesg->is_error;
 
     return $client;
 }
@@ -148,9 +165,15 @@ sub AUTOLOAD {
 
 =back
 
-=head1 AUTHOR
+=head1 AUTHORS
 
-Daniel Westermann-Clark E<lt>danieltwc@cpan.orgE<gt>
+=over 4
+
+=item * Daniel Westermann-Clark E<lt>danieltwc@cpan.orgE<gt>
+
+=item * Adam Jacob E<lt>holoway@cpan.orgE<gt> (TLS support)
+
+=back
 
 =head1 ACKNOWLEDGEMENTS
 
