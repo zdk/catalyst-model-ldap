@@ -6,7 +6,7 @@ use Carp;
 use NEXT;
 use Net::LDAP;
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 our $AUTOLOAD;
 
 =head1 NAME
@@ -158,6 +158,8 @@ sub AUTOLOAD {
 =head1 SEE ALSO
 
 =over 4
+
+=item * L<Catalyst::Helper::Model::LDAP>
 
 =item * L<Catalyst>
 

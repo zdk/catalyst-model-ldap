@@ -60,6 +60,7 @@ METHODS
         my $mesg = $c->model('Person')->search('(cn=Andy Barlow)');
 
 SEE ALSO
+    * Catalyst::Helper::Model::LDAP
     * Catalyst
     * Net::LDAP
 
