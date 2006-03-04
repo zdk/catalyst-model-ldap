@@ -104,7 +104,7 @@ sub mk_comptest {
 
 =back
 
-=head1 AUTHOR
+=head1 AUTHORS
 
 =over
 

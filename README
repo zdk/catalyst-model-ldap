@@ -68,7 +68,7 @@ AUTHORS
     * Daniel Westermann-Clark <danieltwc@cpan.org>
     * Adam Jacob <holoway@cpan.org> (TLS support)
 
-ACKNOWLEDGEMENTS
+ACKNOWLEDGMENTS
     * Salih Gonullu, for initial work on Catalyst mailing list
     * Christopher H. Laco, for "AUTOLOAD" idea
 

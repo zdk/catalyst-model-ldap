@@ -1,5 +1,8 @@
 Revision history for Perl extension Catalyst::Model::LDAP.
 
+0.12  Fri Mar  3 23:59:52 EST 2006
+        - Minor documentation cleanup
+
 0.11  Mon Feb 27 22:26:30 EST 2006
         - Helper documentation cleanup (Gavin Henry)
         - Add TLS Helper option (Gavin Henry)

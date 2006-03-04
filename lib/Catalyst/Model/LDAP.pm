@@ -6,7 +6,7 @@ use Carp;
 use NEXT;
 use Net::LDAP;
 
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 our $AUTOLOAD;
 
 =head1 NAME
@@ -177,7 +177,7 @@ sub AUTOLOAD {
 
 =back
 
-=head1 ACKNOWLEDGEMENTS
+=head1 ACKNOWLEDGMENTS
 
 =over 4
 

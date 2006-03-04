@@ -1,9 +1,13 @@
+use strict;
+use warnings;
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
-    NAME      => 'Catalyst::Model::LDAP',
-    AUTHOR    => 'Daniel Westermann-Clark <danieltwc@cpan.org>',
-    PREREQ_PM => {
+    NAME          => 'Catalyst::Model::LDAP',
+    AUTHOR        => 'Daniel Westermann-Clark <danieltwc@cpan.org>',
+    VERSION_FROM  => 'lib/Catalyst/Model/LDAP.pm',
+    ABSTRACT_FROM => 'lib/Catalyst/Model/LDAP.pm',
+    PREREQ_PM     => {
         'Carp'                 => 0,
         'Catalyst'             => '5.5',
         'FindBin'              => 0,
@@ -12,7 +16,8 @@ WriteMakefile(
         'Net::LDAP::Constant'  => 0,
         'Test::More'           => 0,
     },
-    VERSION_FROM => 'lib/Catalyst/Model/LDAP.pm'
+    dist          => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
+    clean         => { FILES => 'Catalyst-Model-LDAP-* MANIFEST META.yml README' },
 );
 
 
