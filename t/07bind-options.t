@@ -2,12 +2,14 @@ use strict;
 use warnings;
 use Test::More;
 
+plan skip_all => 'set LDAP_TEST_LIVE to enable this test' unless $ENV{LDAP_TEST_LIVE};
+plan skip_all => 'set LDAP_BINDDN and LDAP_PASSWORD to enable this test'
+    unless $ENV{LDAP_BINDDN} and $ENV{LDAP_PASSWORD};
+plan tests    => 6;
+
 use FindBin;
 use lib "$FindBin::Bin/lib";
 use TestApp::Model::LDAP;
-
-plan skip_all => 'set LDAP_BINDDN and LDAP_PASSWORD to enable this test' unless $ENV{LDAP_BINDDN} and $ENV{LDAP_PASSWORD};
-plan tests => 6;
 
 TestApp::Model::LDAP->config(
     dn      => $ENV{LDAP_BINDDN},

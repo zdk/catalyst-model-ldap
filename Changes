@@ -1,5 +1,8 @@
 Revision history for Perl extension Catalyst::Model::LDAP.
 
+0.13  Mon Mar  6 13:38:49 EST 2006
+        - Make live tests optional
+
 0.12  Fri Mar  3 23:59:52 EST 2006
         - Minor documentation cleanup
 

@@ -6,7 +6,7 @@ use Carp;
 use NEXT;
 use Net::LDAP;
 
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 our $AUTOLOAD;
 
 =head1 NAME

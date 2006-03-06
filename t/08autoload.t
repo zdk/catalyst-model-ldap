@@ -1,6 +1,9 @@
 use strict;
 use warnings;
-use Test::More tests => 2;
+use Test::More;
+
+plan skip_all => 'set LDAP_TEST_LIVE to enable this test' unless $ENV{LDAP_TEST_LIVE};
+plan tests    => 2;
 
 use FindBin;
 use lib "$FindBin::Bin/lib";

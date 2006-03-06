@@ -1,7 +1,10 @@
 use strict;
 use warnings;
-use Test::More tests => 4;
 use Net::LDAP::Constant qw(LDAP_SIZELIMIT_EXCEEDED);
+use Test::More;
+
+plan skip_all => 'set LDAP_TEST_LIVE to enable this test' unless $ENV{LDAP_TEST_LIVE};
+plan tests    => 4;
 
 use FindBin;
 use lib "$FindBin::Bin/lib";
