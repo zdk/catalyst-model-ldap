@@ -6,7 +6,7 @@ use Carp;
 use NEXT;
 use Net::LDAP;
 
-our $VERSION = '0.13';
+our $VERSION = '0.14';
 our $AUTOLOAD;
 
 =head1 NAME
@@ -88,22 +88,22 @@ sub _client {
 
     # Default to an anonymous bind
     my @args;
-    if (exists $self->config->{dn}) {
+    if ($self->config->{dn}) {
         push @args, $self->config->{dn};
         push @args, password => $self->config->{password}
             if exists $self->config->{password};
         push @args, %{ $self->config->{options} }
-            if exists $self->config->{options};
+            if ref $self->config->{options} eq 'HASH';
     }
 
     my $client = Net::LDAP->new(
         $self->config->{host},
-        %{ exists $self->config->{options} ? $self->config->{options} : {} },
+        %{ ref $self->config->{options} eq 'HASH' ? $self->config->{options} : {} },
     ) or croak $@;
 
-    if (exists $self->config->{start_tls}) {
+    if ($self->config->{start_tls}) {
         my $mesg;
-        if (exists $self->config->{start_tls_options} && ref $self->config->{start_tls_options} eq 'HASH') {
+        if (ref $self->config->{start_tls_options} eq 'HASH') {
             $mesg = $client->start_tls(%{ $self->config->{start_tls_options} });
         }
         else {
@@ -132,7 +132,10 @@ sub _execute {
     my ($self, $op, @args) = @_;
 
     my $client = $self->_client;
-    my $mesg   = $client->$op(@args, %{ $self->config->{options} });
+    my $mesg   = $client->$op(
+        @args,
+        %{ ref $self->config->{options} eq 'HASH' ? $self->config->{options} : {} },
+    );
 
     return $mesg;
 }

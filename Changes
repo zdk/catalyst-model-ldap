@@ -1,5 +1,8 @@
 Revision history for Perl extension Catalyst::Model::LDAP.
 
+0.14  Mon Mar  6 17:50:19 EST 2006
+        - Don't try to bind on an empty DN
+
 0.13  Mon Mar  6 13:38:49 EST 2006
         - Make live tests optional
 
