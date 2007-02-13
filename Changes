@@ -1,5 +1,15 @@
 Revision history for Perl extension Catalyst::Model::LDAP.
 
+0.15_01  Mon Feb 12 20:53:08 EST 2007
+        - Accessors for entries (Marcus Ramberg)
+        - Pager support (Marcus Ramberg)
+        - Documentation updates
+        - Refactor connection setup
+        - Fix config for application instances
+        - Simplify use of options to allow a cleaner interface
+        - Convert from NEXT to Class::C3
+        - Convert from ExtUtils::MakeMaker to Module::Install
+
 0.14  Mon Mar  6 17:50:19 EST 2006
         - Don't try to bind on an empty DN
 

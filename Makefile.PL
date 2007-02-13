@@ -1,38 +1,26 @@
-use strict;
-use warnings;
-use ExtUtils::MakeMaker;
+use inc::Module::Install;
 
-WriteMakefile(
-    NAME          => 'Catalyst::Model::LDAP',
-    AUTHOR        => 'Daniel Westermann-Clark <danieltwc@cpan.org>',
-    VERSION_FROM  => 'lib/Catalyst/Model/LDAP.pm',
-    ABSTRACT_FROM => 'lib/Catalyst/Model/LDAP.pm',
-    PREREQ_PM     => {
-        'Carp'                 => 0,
-        'Catalyst'             => '5.5',
-        'FindBin'              => 0,
-        'NEXT'                 => 0,
-        'Net::LDAP'            => 0,
-        'Net::LDAP::Constant'  => 0,
-        'Test::More'           => 0,
-    },
-    dist          => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean         => { FILES => 'Catalyst-Model-LDAP-* MANIFEST META.yml README' },
-);
+perl_version '5.8.1';
 
+name     'Catalyst-Model-LDAP';
+all_from 'lib/Catalyst/Model/LDAP.pm';
 
-package MY;
+requires 'Carp';
+requires 'Catalyst' => '5.62';  # ACCEPT_CONTEXT
+requires 'Catalyst::Model';
+requires 'Class::Accessor::Fast';
+requires 'Class::C3';
+requires 'Data::Page';
+requires 'Net::LDAP';
+requires 'Net::LDAP::Constant';
+requires 'Net::LDAP::Control::Sort';
+requires 'Net::LDAP::Control::VLV';
+requires 'Net::LDAP::Entry';
+requires 'Net::LDAP::Search';
 
-sub postamble {
-    return <<"...";
-cover::
-	cover -delete
-	HARNESS_PERL_SWITCHES=-MDevel::Cover \$(MAKE) test
-	cover
+build_requires 'Data::Dumper';
+build_requires 'FindBin';
+build_requires 'Catalyst::Test';
+build_requires 'Test::More';
 
-readme::
-	perldoc -o text -d README \$(NAME)
-...
-}
-
-1;
+WriteAll;

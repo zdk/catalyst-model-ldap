@@ -132,7 +132,7 @@ package [% class %];
 
 use strict;
 use warnings;
-use base 'Catalyst::Model::LDAP';
+use base qw/Catalyst::Model::LDAP/;
 
 __PACKAGE__->config(
     host              => '[% host %]',
@@ -141,9 +141,7 @@ __PACKAGE__->config(
     password          => '[% password %]',
     start_tls         => [% start_tls %],
     start_tls_options => { verify => 'require' },
-    options           => {},  # Options passed to all Net::LDAP methods
-                              # (e.g. SASL for bind or sizelimit for
-                              # search)
+    options           => {},  # Options passed to search
 );
 
 =head1 NAME

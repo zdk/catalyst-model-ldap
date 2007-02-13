@@ -1,13 +1,11 @@
 package Catalyst::Model::LDAP;
 
 use strict;
+use warnings;
 use base qw/Catalyst::Model/;
-use Carp;
-use NEXT;
-use Net::LDAP;
+use Carp qw/croak/;
 
-our $VERSION = '0.14';
-our $AUTOLOAD;
+our $VERSION = '0.15_01';
 
 =head1 NAME
 
@@ -18,29 +16,22 @@ Catalyst::Model::LDAP - LDAP model class for Catalyst
     # Use the Catalyst helper
     script/myapp_create.pl model Person LDAP ldap.ufl.edu ou=People,dc=ufl,dc=edu
 
-    # lib/MyApp/Model/Person.pm
+    # Or, in lib/MyApp/Model/Person.pm
     package MyApp::Model::Person;
 
-    use base 'Catalyst::Model::LDAP';
+    use base qw/Catalyst::Model::LDAP/;
 
     __PACKAGE__->config(
-        host              => 'ldap.ufl.edu',
-        base              => 'ou=People,dc=ufl,dc=edu',
-        dn                => '',
-        password          => '',
-        start_tls         => 1,
-        start_tls_options => { verify => 'require' },
-        options           => {},  # Options passed to all Net::LDAP methods
-                                  # (e.g. SASL for bind or sizelimit for
-                                  # search)
+        host => 'ldap.ufl.edu',
+        base => 'ou=People,dc=ufl,dc=edu',
     );
 
     1;
 
-    # In your controller
+    # Then, in your controller
     my $mesg = $c->model('Person')->search('(cn=Lou Rhodes)');
     my @entries = $mesg->entries;
-    print $entries[0]->get_value('sn');
+    print $entries[0]->sn;
 
 =head1 DESCRIPTION
 
@@ -48,34 +39,83 @@ This is the L<Net::LDAP> model class for Catalyst.  It is nothing more
 than a simple wrapper for L<Net::LDAP>.
 
 This class simplifies LDAP access by letting you configure a common
-set of bind arguments and options.  It also lets you configure a base
-DN for searching.
+set of bind arguments.  It also lets you configure a base DN for
+searching.
 
-L<Net::LDAP> methods are supported via Perl's C<AUTOLOAD> mechanism.
-Please refer to the L<Net::LDAP> documentation for information on
-what's available.
+Please refer to the L<Net::LDAP> documentation for information on what
+else is available.
 
-=head1 METHODS
+=head1 CONFIGURATION
 
-=head2 new
+The following configuration parameters are supported:
 
-Create a new Catalyst LDAP model component.
+=over 4
 
-=cut
+=item * C<host>
 
-sub new {
-    my ($class, $c, $config) = @_;
+The LDAP server's fully qualified domain name (FQDN),
+e.g. C<ldap.ufl.edu>.  Can also be an IP address, e.g. C<127.0.0.1>.
 
-    my $self = $class->NEXT::new($c, $config);
-    $self->config($config);
+=item * C<base>
 
-    return $self;
-}
+The base distinguished name (DN) for searching the directory,
+e.g. C<ou=People,dc=ufl,dc=edu>.
 
-=head2 _client
+=item * C<dn>
+
+(Optional) The bind DN for connecting to the directory,
+e.g. C<dn=admin,dc=ufl,dc=edu>.  This can be anyone that has
+permission to search under the base DN, as per your LDAP server's
+access control lists.
+
+=item * C<password>
+
+(Optional) The password for the specified bind DN.
+
+=item * C<start_tls>
+
+(Optional) Set to C<1> to use TLS when binding to the LDAP server, for
+secure connections.
+
+=item * C<start_tls_options>
+
+(Optional) A hashref containing options to use when binding using TLS
+to the LDAP server.
+
+=item * C<options>
+
+(Optional) A hashref containing options to pass to
+L<Catalyst::Model::LDAP::Connection/search>.  For example, this can be
+used to set a sizelimit.
+
+NOTE: In previous versions, these options were passed to all
+L<Net::LDAP> methods.  This has changed to allow a cleaner connection
+interface.  If you still require this behavior, create a class
+inheriting from L<Catalyst::Model::LDAP::Connection> that overrides
+the specific methods and set C<connection_class>.
+
+=item * C<connection_class>
+
+(Optional) The class or package name that wraps L<Net::LDAP>.
+Defaults to L<Catalyst::Model::LDAP::Connection>.
+
+See also L<Catalyst::Model::LDAP::Connection/OVERRIDING METHODS>.
+
+=item * C<entry_class>
+
+(Optional) The class or package name to rebless L<Net::LDAP::Entry>
+objects as.  Defaults to L<Catalyst::Model::LDAP::Entry>.
+
+See also L<Catalyst::Model::LDAP::Entry/ADDING ENTRY METHODS>.
+
+=back
+
+=head1 INTERNAL METHODS
+
+=head2 ACCEPT_CONTEXT
 
 Bind the client using the current configuration and return it.  This
-method is automatically called when you use a L<Net::LDAP> method.
+method is automatically called when you use e.g. C<< $c->model('LDAP') >>.
 
 If the C<start_tls> configuration option is present, the client will
 use the L<Net::LDAP> C<start_tls> method to make your connection
@@ -83,79 +123,19 @@ secure.
 
 =cut
 
-sub _client {
+sub ACCEPT_CONTEXT {
     my ($self) = @_;
 
-    # Default to an anonymous bind
-    my @args;
-    if ($self->config->{dn}) {
-        push @args, $self->config->{dn};
-        push @args, password => $self->config->{password}
-            if exists $self->config->{password};
-        push @args, %{ $self->config->{options} }
-            if ref $self->config->{options} eq 'HASH';
-    }
+    my %args = %$self;
 
-    my $client = Net::LDAP->new(
-        $self->config->{host},
-        %{ ref $self->config->{options} eq 'HASH' ? $self->config->{options} : {} },
-    ) or croak $@;
+    my $class = $args{connection_class} || 'Catalyst::Model::LDAP::Connection';
+    eval "require $class";
 
-    if ($self->config->{start_tls}) {
-        my $mesg;
-        if (ref $self->config->{start_tls_options} eq 'HASH') {
-            $mesg = $client->start_tls(%{ $self->config->{start_tls_options} });
-        }
-        else {
-            $mesg = $client->start_tls;
-        }
-        croak 'LDAP TLS error: ' . $mesg->error if $mesg->is_error;
-    }
-
-    my $mesg = $client->bind(@args);
+    my $conn = $class->new(%args) or croak $@;
+    my $mesg = $conn->bind(%args);
     croak 'LDAP error: ' . $mesg->error if $mesg->is_error;
 
-    return $client;
-}
-
-=head2 _execute
-
-Execute the specified LDAP command.  Call the appropriate L<Net::LDAP>
-methods directly instead of this method.  For example:
-
-    # In your controller
-    my $mesg = $c->model('Person')->search('(cn=Andy Barlow)');
-
-=cut
-
-sub _execute {
-    my ($self, $op, @args) = @_;
-
-    my $client = $self->_client;
-    my $mesg   = $client->$op(
-        @args,
-        %{ ref $self->config->{options} eq 'HASH' ? $self->config->{options} : {} },
-    );
-
-    return $mesg;
-}
-
-# Based on Catalyst::Model::NetBlogger
-sub AUTOLOAD {
-    my ($self, @args) = @_;
-
-    return if $AUTOLOAD =~ /::DESTROY$/;
-    $AUTOLOAD =~ s/^.*:://;
-
-    if ($AUTOLOAD eq 'search' and scalar @args == 1) {
-        # Simplify common case
-        @args = (
-            filter => $args[0],
-            base   => $self->config->{base},
-        );
-    }
-
-    return $self->_execute($AUTOLOAD, @args);
+    return $conn;
 }
 
 =head1 SEE ALSO
@@ -163,6 +143,12 @@ sub AUTOLOAD {
 =over 4
 
 =item * L<Catalyst::Helper::Model::LDAP>
+
+=item * L<Catalyst::Model::LDAP::Connection>
+
+=item * L<Catalyst::Model::LDAP::Search>
+
+=item * L<Catalyst::Model::LDAP::Entry>
 
 =item * L<Catalyst>
 
@@ -178,6 +164,8 @@ sub AUTOLOAD {
 
 =item * Adam Jacob E<lt>holoway@cpan.orgE<gt> (TLS support)
 
+=item * Marcus Ramberg (paging support and entry AUTOLOAD)
+
 =back
 
 =head1 ACKNOWLEDGMENTS
@@ -185,8 +173,6 @@ sub AUTOLOAD {
 =over 4
 
 =item * Salih Gonullu, for initial work on Catalyst mailing list
-
-=item * Christopher H. Laco, for C<AUTOLOAD> idea
 
 =back
 

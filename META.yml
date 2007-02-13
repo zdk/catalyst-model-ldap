@@ -1,17 +1,30 @@
-# http://module-build.sourceforge.net/META-spec.html
-#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
-name:         Catalyst-Model-LDAP
-version:      0.14
-version_from: lib/Catalyst/Model/LDAP.pm
-installdirs:  site
-requires:
-    Carp:                          0
-    Catalyst:                      5.5
-    FindBin:                       0
-    Net::LDAP:                     0
-    Net::LDAP::Constant:           0
-    NEXT:                          0
-    Test::More:                    0
-
+abstract: LDAP model class for Catalyst
+author: =over 4
+build_requires: 
+  Catalyst::Test: 0
+  Data::Dumper: 0
+  FindBin: 0
+  Test::More: 0
 distribution_type: module
-generated_by: ExtUtils::MakeMaker version 6.17
+generated_by: Module::Install version 0.64
+license: perl
+name: Catalyst-Model-LDAP
+no_index: 
+  directory: 
+    - inc
+    - t
+requires: 
+  Carp: 0
+  Catalyst: 5.62
+  Catalyst::Model: 0
+  Class::Accessor::Fast: 0
+  Class::C3: 0
+  Data::Page: 0
+  Net::LDAP: 0
+  Net::LDAP::Constant: 0
+  Net::LDAP::Control::Sort: 0
+  Net::LDAP::Control::VLV: 0
+  Net::LDAP::Entry: 0
+  Net::LDAP::Search: 0
+  perl: 5.8.1
+version: 0.15_01
