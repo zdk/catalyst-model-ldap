@@ -5,7 +5,7 @@ use warnings;
 use base qw/Catalyst::Model/;
 use Carp qw/croak/;
 
-our $VERSION = '0.15_01';
+our $VERSION = '0.15';
 
 =head1 NAME
 
@@ -130,6 +130,7 @@ sub ACCEPT_CONTEXT {
 
     my $class = $args{connection_class} || 'Catalyst::Model::LDAP::Connection';
     eval "require $class";
+    die $@ if $@;
 
     my $conn = $class->new(%args) or croak $@;
     my $mesg = $conn->bind(%args);

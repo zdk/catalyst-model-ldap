@@ -123,8 +123,6 @@ sub AUTOLOAD {
     return $self->get_value($attribute);
 }
 
-=head1 
-
 =head1 SEE ALSO
 
 =over 4

@@ -26,14 +26,13 @@ sub init {
     my ($self, $class) = @_;
 
     eval "require $class";
+    die $@ if $@;
 
     foreach my $entry (@{ $self->{entries} }) {
         bless $entry, $class;
         $entry->_ldap_client($self->parent);
     }
 }
-
-=head1 
 
 =head1 SEE ALSO
 

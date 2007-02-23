@@ -48,7 +48,7 @@ the C<connection_class> configuration variable.  For example:
         my $sasl = Authen::SASL->new(...);
         push @args, sasl => $sasl;
 
-        $self->SUPER::bind(@_);
+        $self->SUPER::bind(@args);
     }
 
     1;
@@ -198,8 +198,6 @@ sub search {
     return ($pager ? ($mesg, $pager) : $mesg);
 }
 
-=head1 
-
 =head1 SEE ALSO
 
 =over 4
@@ -213,6 +211,8 @@ sub search {
 =over 4
 
 =item * Daniel Westermann-Clark
+
+=item * Marcus Ramberg (paging support)
 
 =back
 

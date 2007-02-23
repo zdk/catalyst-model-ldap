@@ -1,5 +1,9 @@
 Revision history for Perl extension Catalyst::Model::LDAP.
 
+0.15  Fri Feb 23 11:37:25 EST 2007
+        - Throw runtime require errors
+        - Documentation fixes
+
 0.15_01  Mon Feb 12 20:53:08 EST 2007
         - Accessors for entries (Marcus Ramberg)
         - Pager support (Marcus Ramberg)
