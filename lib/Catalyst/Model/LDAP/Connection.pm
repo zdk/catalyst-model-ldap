@@ -2,7 +2,7 @@ package Catalyst::Model::LDAP::Connection;
 
 use strict;
 use warnings;
-use base qw/Net::LDAP/;
+use base qw/Net::LDAP Class::Accessor::Fast/;
 use Carp qw/croak/;
 use Catalyst::Model::LDAP::Search;
 use Class::C3;
@@ -10,6 +10,8 @@ use Data::Page;
 use Net::LDAP::Constant qw/LDAP_CONTROL_VLVRESPONSE/;
 use Net::LDAP::Control::Sort;
 use Net::LDAP::Control::VLV;
+
+__PACKAGE__->mk_accessors(qw/base options entry_class/);
 
 =head1 NAME
 
@@ -64,6 +66,8 @@ Create a new connection to the specific LDAP server.
         base => 'ou=People,dc=ufl,dc=edu',
     );
 
+On connection failure, an error is thrown using L<Carp/croak>.
+
 =cut
 
 sub new {
@@ -73,11 +77,13 @@ sub new {
     my %options = %{ ref $args{options} eq 'HASH' ? delete $args{options} : {} };
     my $entry_class = delete $args{entry_class} || 'Catalyst::Model::LDAP::Entry';
 
-    my $self = $class->next::method(delete $args{host}, %args);
+    my $host = delete $args{host};
+    my $self = $class->next::method($host, %args);
+    croak "Error connecting to $host: $@" unless $self;
 
-    $self->{_base} = $base;
-    $self->{_options} = { %options };
-    $self->{_entry_class} = $entry_class;
+    $self->base($base);
+    $self->options(\%options);
+    $self->entry_class($entry_class);
 
     return $self;
 }
@@ -91,28 +97,41 @@ Bind to the configured LDAP server using the specified credentials.
         password => 'secret',
     );
 
+This method behaves similarly to L<Net::LDAP/bind>, except that it
+gives an explicit name to the C<dn> parameter.  For example, if you
+need to use SASL to bind to the server, you can specify that in your
+call:
+
+    $conn->bind(
+        dn   => 'uid=dwc,ou=People,dc=ufl,dc=edu',
+        sasl => Authen::SASL->new(mechanism => 'GSSAPI'),
+    );
+
+Additionally, if the C<start_tls> configuration option is present, the
+client will use L<Net::LDAP/start_tls> to make your connection secure.
+
+For more information on customizing the bind process, see
+L</OVERRIDING METHODS>.
+
 =cut
 
 sub bind {
     my ($self, %args) = @_;
 
+    delete $args{$_} for qw/host base options connection_class entry_class/;
+
     # Bind using TLS if configured
-    if ($args{start_tls}) {
+    if (delete $args{start_tls}) {
         my $mesg = $self->start_tls(
-            %{ ref $args{start_tls_options} eq 'HASH' ? $args{start_tls_options} : {} },
+            %{ delete $args{start_tls_options} || {} },
         );
         croak 'LDAP TLS error: ' . $mesg->error if $mesg->is_error;
     }
 
     # Bind via DN if configured
-    my @args;
-    if ($args{dn}) {
-        push @args, $args{dn};
-        push @args, password => $args{password}
-            if exists $args{password};
-    }
+    my $dn = delete $args{dn};
 
-    $self->next::method(@args);
+    $self->next::method($dn ? ($dn, %args) : %args);
 }
 
 =head2 search 
@@ -157,8 +176,8 @@ sub search {
 
     # Use default base
     %args = (
-        base => $self->{_base},
-        %{ $self->{_options} },
+        base => $self->base,
+        %{ $self->options || {} },
         %args,
     );
 
@@ -184,16 +203,16 @@ sub search {
         push @{ $args{control} }, $vlv;
 
         $mesg = $self->next::method(%args);
-        my $resp = $mesg->control(LDAP_CONTROL_VLVRESPONSE) or
+        my @resp = $mesg->control(LDAP_CONTROL_VLVRESPONSE) or
             croak 'Could not get pager from LDAP response: ' . $mesg->server_error;
-        $pager = Data::Page->new($resp->content, $rows, $page);
+        $pager = Data::Page->new($resp[0]->content, $rows, $page);
     }
     else {
         $mesg = $self->next::method(%args);
     }
 
     bless $mesg, 'Catalyst::Model::LDAP::Search';
-    $mesg->init($self->{_entry_class});
+    $mesg->init($self->entry_class);
 
     return ($pager ? ($mesg, $pager) : $mesg);
 }

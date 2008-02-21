@@ -6,7 +6,7 @@ use FindBin;
 use lib "$FindBin::Bin/lib";
 use Catalyst::Test 'TestApp';
 
-plan skip_all => 'set LDAP_TEST_LIVE to enable this test' unless $ENV{LDAP_TEST_LIVE};
+plan skip_all => 'set TEST_AUTHOR to enable this test' unless $ENV{TEST_AUTHOR};
 plan tests    => 6;
 
 {

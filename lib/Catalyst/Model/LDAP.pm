@@ -5,7 +5,7 @@ use warnings;
 use base qw/Catalyst::Model/;
 use Carp qw/croak/;
 
-our $VERSION = '0.15';
+our $VERSION = '0.16';
 
 =head1 NAME
 
@@ -117,9 +117,8 @@ See also L<Catalyst::Model::LDAP::Entry/ADDING ENTRY METHODS>.
 Bind the client using the current configuration and return it.  This
 method is automatically called when you use e.g. C<< $c->model('LDAP') >>.
 
-If the C<start_tls> configuration option is present, the client will
-use the L<Net::LDAP> C<start_tls> method to make your connection
-secure.
+See L<Catalyst::Model::LDAP::Connection/bind> for information on how
+the bind operation is done.
 
 =cut
 
@@ -132,7 +131,7 @@ sub ACCEPT_CONTEXT {
     eval "require $class";
     die $@ if $@;
 
-    my $conn = $class->new(%args) or croak $@;
+    my $conn = $class->new(%args);
     my $mesg = $conn->bind(%args);
     croak 'LDAP error: ' . $mesg->error if $mesg->is_error;
 

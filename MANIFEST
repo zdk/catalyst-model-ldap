@@ -23,6 +23,8 @@ t/lib/TestApp/LDAP/Connection.pm
 t/lib/TestApp/LDAP/Entry.pm
 t/lib/TestApp/Model/LDAP.pm
 t/live_search.t
-t/unit_bind.t
-t/unit_search.t
-t/unit_search_limit.t
+t/unit_Connection.t
+t/unit_Connection_bind.t
+t/unit_Connection_search.t
+t/unit_Connection_search_limit.t
+t/unit_Entry.t

@@ -11,7 +11,7 @@ requires 'Catalyst::Model';
 requires 'Class::Accessor::Fast';
 requires 'Class::C3';
 requires 'Data::Page';
-requires 'Net::LDAP';
+requires 'Net::LDAP' => '0.34';
 requires 'Net::LDAP::Constant';
 requires 'Net::LDAP::Control::Sort';
 requires 'Net::LDAP::Control::VLV';

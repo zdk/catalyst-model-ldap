@@ -1,4 +1,20 @@
 Revision history for Perl extension Catalyst::Model::LDAP.
+          
+0.16  Wed Feb 20 19:17:04 EST 2008
+        - Fix Catalyst::Model::LDAP::Entry's constructor
+        - Reorganize tests a little
+        - Move exception on connection failure from ACCEPT_CONTEXT to
+          Catalyst::Model::LDAP::Connection->new
+        - Fix Catalyst::Model::LDAP::Connection->search to handle
+          list-return from Net::LDAP::Message->control (omega)
+        - Convert base, options, and entry_class in
+          Catalyst::Model::LDAP::Connection to full accessors
+        - Make Catalyst::Model::LDAP::Connection->bind a little more
+          flexible
+        - s/LDAP_TEST_LIVE/TEST_AUTHOR/g in tests
+        - Tweak Catalyst::Model::LDAP::Entry's AUTOLOAD error message
+          to more closely match Perl's error message (RT #28752)
+        - Add Catalyst::Model::LDAP::Entry::can method
 
 0.15  Fri Feb 23 11:37:25 EST 2007
         - Throw runtime require errors

@@ -2,7 +2,7 @@ package Catalyst::Model::LDAP::Entry;
 
 use strict;
 use warnings;
-use base qw/Class::Accessor::Fast Net::LDAP::Entry/;
+use base qw/Net::LDAP::Entry Class::Accessor::Fast/;
 use Carp qw/croak/;
 use Class::C3;
 
@@ -81,11 +81,13 @@ L</update>.
 =cut
 
 sub new {
-    my $class = shift;
+    my ($class, $dn, %attributes) = @_;
 
-    my $self = $class->next::method(@_);
+    my $client = delete $attributes{_ldap_client};
 
-    if (my $client = shift) {
+    my $self = $class->next::method($dn, %attributes);
+
+    if ($client) {
         $self->_ldap_client($client);
     }
 
@@ -107,13 +109,26 @@ sub update {
     return $self->next::method($client, @_);
 }
 
+=head2 can
+
+Override C<can> to declare existence of the LDAP entry attribute
+methods from C<AUTOLOAD>.
+
+=cut
+
+sub can {
+    my ($self, $method) = @_;
+
+    $self->exists($method) || $self->SUPER::can($method);
+}
+
 sub AUTOLOAD {
     my ($self, @args) = @_;
 
     my ($attribute) = (our $AUTOLOAD =~ /([^:]+)$/);
     return if $attribute eq 'DESTROY';
 
-    croak "Can't locate object method $AUTOLOAD via package \"" . __PACKAGE__ . '"'
+    croak qq[Can't locate object method "$attribute" via package "] . ref($self) . qq["]
         unless $self->exists($attribute);
 
     if (scalar @args) {
