@@ -23,5 +23,5 @@ ok($mesg->entries, 'got entries');
 
 my $entry = $mesg->entry(0);
 isa_ok($entry, 'Catalyst::Model::LDAP::Entry');
-is($entry->get_value('sn'), $SN, 'first entry sn matches');
-is($entry->sn, $SN, 'first entry sn via AUTOLOAD matches');
+is(uc($entry->get_value('sn')), $SN, 'first entry sn matches');
+is(uc($entry->sn), $SN, 'first entry sn via AUTOLOAD matches');

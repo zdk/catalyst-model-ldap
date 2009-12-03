@@ -5,7 +5,7 @@ use warnings;
 use base qw/Catalyst::Model/;
 use Carp qw/croak/;
 
-our $VERSION = '0.16';
+our $VERSION = '0.17';
 
 =head1 NAME
 
@@ -126,6 +126,10 @@ sub ACCEPT_CONTEXT {
     my ($self) = @_;
 
     my %args = %$self;
+
+    # Remove Catalyst-specific parameters (e.g. catalyst_component_name), which
+    # cause issues Net::LDAP
+    delete $args{$_} for (grep { /^_?catalyst/ } keys %args);
 
     my $class = $args{connection_class} || 'Catalyst::Model::LDAP::Connection';
     eval "require $class";

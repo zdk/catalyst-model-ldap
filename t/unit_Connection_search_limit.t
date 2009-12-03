@@ -28,5 +28,5 @@ is($mesg->count, $SIZELIMIT, 'number of entries matches sizelimit');
 
 my $entry = $mesg->entry(0);
 isa_ok($entry, 'Catalyst::Model::LDAP::Entry');
-is($entry->get_value('sn'), $SN, 'entry sn matches');
-is($entry->sn, $SN, 'entry sn via AUTOLOAD matches');
+is(uc($entry->get_value('sn')), $SN, 'entry sn matches');
+is(uc($entry->sn), $SN, 'entry sn via AUTOLOAD matches');

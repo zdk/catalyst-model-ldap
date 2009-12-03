@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use base qw/Net::LDAP::Entry Class::Accessor::Fast/;
 use Carp qw/croak/;
-use Class::C3;
+use MRO::Compat;
 
 __PACKAGE__->mk_accessors(qw/_ldap_client/);
 
@@ -118,7 +118,7 @@ methods from C<AUTOLOAD>.
 
 sub can {
     my ($self, $method) = @_;
-
+    return 0 unless ref($self);
     $self->exists($method) || $self->SUPER::can($method);
 }
 

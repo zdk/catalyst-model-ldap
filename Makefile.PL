@@ -1,4 +1,4 @@
-use inc::Module::Install;
+use inc::Module::Install 0.87;
 
 perl_version '5.8.1';
 
@@ -9,8 +9,8 @@ requires 'Carp';
 requires 'Catalyst' => '5.62';  # ACCEPT_CONTEXT
 requires 'Catalyst::Model';
 requires 'Class::Accessor::Fast';
-requires 'Class::C3';
 requires 'Data::Page';
+requires 'MRO::Compat';
 requires 'Net::LDAP' => '0.34';
 requires 'Net::LDAP::Constant';
 requires 'Net::LDAP::Control::Sort';
@@ -22,5 +22,7 @@ build_requires 'Data::Dumper';
 build_requires 'FindBin';
 build_requires 'Catalyst::Test';
 build_requires 'Test::More';
+
+resources repository => 'http://dev.catalyst.perl.org/repos/Catalyst/trunk/Catalyst-Model-LDAP/';
 
 WriteAll;

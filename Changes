@@ -1,4 +1,14 @@
 Revision history for Perl extension Catalyst::Model::LDAP.
+
+0.17  Thu Dec  3 16:48:27 EST 2009
+        - Fix a problem when the Entry and Connection classes
+          live under the same app namespace, when COMPONENT gets
+          called from Catalyst, Net::LDAP::Entry dies because
+          $self is not a reference
+        - Update ACCEPT_CONTEXT method to remove Catalyst-specific
+          parameters, which broke anonymous Net::LDAP::bind operations
+        - Convert from Class::C3 to MRO::Compat
+        - Reorganize tests and update their deprecated Catalyst usage
           
 0.16  Wed Feb 20 19:17:04 EST 2008
         - Fix Catalyst::Model::LDAP::Entry's constructor
