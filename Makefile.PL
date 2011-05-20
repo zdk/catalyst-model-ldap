@@ -22,6 +22,7 @@ build_requires 'Data::Dumper';
 build_requires 'FindBin';
 build_requires 'Catalyst::Test';
 build_requires 'Test::More';
+build_requires 'Net::LDAP::Server::Test';
 
 resources repository => 'http://dev.catalyst.perl.org/repos/Catalyst/trunk/Catalyst-Model-LDAP/';
 
