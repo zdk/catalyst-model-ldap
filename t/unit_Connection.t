@@ -1,17 +1,24 @@
 use strict;
 use warnings;
-use Catalyst::Model::LDAP::Connection;
-use Test::More;
+use Test::More tests => 4;
 
-plan skip_all => 'set TEST_AUTHOR to enable this test' unless $ENV{TEST_AUTHOR};
-plan tests    => 3;
+use Net::LDAP::Server::Test;
+use Catalyst::Model::LDAP::Connection;
+
+BEGIN {
+    use lib 't/lib';
+    use_ok( 'TestServer' );
+    my $ts   = TestServer->new();
+    $ts->start();
+    our %opts = %{ $ts->opts };    
+}
 
 {
     eval {
         my $ldap = Catalyst::Model::LDAP::Connection->new(
             host    => 'example.com',
             base    => 'ou=People,dc=ufl,dc=edu',
-            timeout => 2,
+            timeout => 0.5,
         );
     };
 
@@ -20,9 +27,11 @@ plan tests    => 3;
 }
 
 {
+    our %opts;
     my $ldap = Catalyst::Model::LDAP::Connection->new(
-        host    => 'ldap.ufl.edu',
-        base    => 'ou=People,dc=ufl,dc=edu',
+        host    => 'localhost',
+        port    => $opts{port},
+        base    => $opts{base},
         timeout => 2,
     );
 
