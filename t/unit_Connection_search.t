@@ -6,12 +6,13 @@ use Test::More tests => 8;
 BEGIN {
     use lib 't/lib';
     use_ok( 'TestServer' );
-    my $ts   = TestServer->new();
+    our $ts   = TestServer->new();
     $ts->start();
     our %opts = %{ $ts->opts };
 }
 
 {
+    our $ts;
     our %opts;
     my $SN = 'BAR';
 
@@ -19,6 +20,8 @@ BEGIN {
         host => 'localhost',
         port => $opts{port},
         base => $opts{base} );
+
+    $ts->populate( $ldap );
 
     isa_ok($ldap, 'Catalyst::Model::LDAP::Connection', 'created connection');
 
