@@ -1,0 +1,129 @@
+NAME
+    Catalyst::Model::LDAP - LDAP model class for Catalyst
+
+SYNOPSIS
+        # Use the Catalyst helper
+        script/myapp_create.pl model Person LDAP ldap.ufl.edu ou=People,dc=ufl,dc=edu
+
+        # Or, in lib/MyApp/Model/Person.pm
+        package MyApp::Model::Person;
+
+        use base qw/Catalyst::Model::LDAP/;
+
+        __PACKAGE__->config(
+            host => 'ldap.ufl.edu',
+            base => 'ou=People,dc=ufl,dc=edu',
+        );
+
+        1;
+
+        # Then, in your controller
+        my $mesg = $c->model('Person')->search('(cn=Lou Rhodes)');
+        my @entries = $mesg->entries;
+        print $entries[0]->sn;
+
+DESCRIPTION
+    This is the Net::LDAP model class for Catalyst. It is nothing more than
+    a simple wrapper for Net::LDAP.
+
+    This class simplifies LDAP access by letting you configure a common set
+    of bind arguments. It also lets you configure a base DN for searching.
+
+    Please refer to the Net::LDAP documentation for information on what else
+    is available.
+
+CONFIGURATION
+    The following configuration parameters are supported:
+
+    *   "host"
+
+        The LDAP server's fully qualified domain name (FQDN), e.g.
+        "ldap.ufl.edu". Can also be an IP address, e.g. 127.0.0.1.
+
+    *   "base"
+
+        The base distinguished name (DN) for searching the directory, e.g.
+        "ou=People,dc=ufl,dc=edu".
+
+    *   "dn"
+
+        (Optional) The bind DN for connecting to the directory, e.g.
+        "dn=admin,dc=ufl,dc=edu". This can be anyone that has permission to
+        search under the base DN, as per your LDAP server's access control
+        lists.
+
+    *   "password"
+
+        (Optional) The password for the specified bind DN.
+
+    *   "start_tls"
+
+        (Optional) Set to 1 to use TLS when binding to the LDAP server, for
+        secure connections.
+
+    *   "start_tls_options"
+
+        (Optional) A hashref containing options to use when binding using
+        TLS to the LDAP server.
+
+    *   "options"
+
+        (Optional) A hashref containing options to pass to "search" in
+        Catalyst::Model::LDAP::Connection. For example, this can be used to
+        set a sizelimit.
+
+        NOTE: In previous versions, these options were passed to all
+        Net::LDAP methods. This has changed to allow a cleaner connection
+        interface. If you still require this behavior, create a class
+        inheriting from Catalyst::Model::LDAP::Connection that overrides the
+        specific methods and set "connection_class".
+
+    *   "connection_class"
+
+        (Optional) The class or package name that wraps Net::LDAP. Defaults
+        to Catalyst::Model::LDAP::Connection.
+
+        See also "OVERRIDING METHODS" in Catalyst::Model::LDAP::Connection.
+
+    *   "entry_class"
+
+        (Optional) The class or package name to rebless Net::LDAP::Entry
+        objects as. Defaults to Catalyst::Model::LDAP::Entry.
+
+        See also "ADDING ENTRY METHODS" in Catalyst::Model::LDAP::Entry.
+
+INTERNAL METHODS
+  ACCEPT_CONTEXT
+    Bind the client using the current configuration and return it. This
+    method is automatically called when you use e.g. "$c->model('LDAP')".
+
+    See "bind" in Catalyst::Model::LDAP::Connection for information on how
+    the bind operation is done.
+
+SEE ALSO
+    *   Catalyst::Helper::Model::LDAP
+
+    *   Catalyst::Model::LDAP::Connection
+
+    *   Catalyst::Model::LDAP::Search
+
+    *   Catalyst::Model::LDAP::Entry
+
+    *   Catalyst
+
+    *   Net::LDAP
+
+AUTHORS
+    *   Daniel Westermann-Clark <danieltwc@cpan.org>
+
+    *   Adam Jacob <holoway@cpan.org> (TLS support)
+
+    *   Marcus Ramberg (paging support and entry AUTOLOAD)
+
+ACKNOWLEDGMENTS
+    *   Salih Gonullu, for initial work on Catalyst mailing list
+
+LICENSE
+    This library is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+
